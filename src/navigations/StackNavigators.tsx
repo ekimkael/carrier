@@ -3,9 +3,7 @@ import { IconButton } from "native-base"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 import HomeScreen from "../screens/HomeScreen"
-import SignInScreen from "../screens/SignInScreen"
 import UserIcon from "../components/icons/UserIcon"
-import ForgotPasswordScreen from "../screens/ForgotPasswordScreen"
 import SettingsScreen from "../screens/SettingsScreen"
 import SubscriptionScreen from "../screens/SubscriptionScreen"
 
@@ -15,22 +13,6 @@ export function HomeStack() {
 	return (
 		<RootStack.Navigator>
 			<RootStack.Group>
-				<RootStack.Screen
-					name="SignInScreen"
-					component={SignInScreen}
-					options={{ title: "", headerShadowVisible: false }}
-				/>
-
-				<RootStack.Screen
-					name="ForgotPasswordScreen"
-					component={ForgotPasswordScreen}
-					options={{
-						headerTintColor: "black",
-						headerShadowVisible: false,
-						title: "Forgot your password",
-					}}
-				/>
-
 				<RootStack.Screen
 					name="HomeScreen"
 					component={HomeScreen}

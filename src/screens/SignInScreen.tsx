@@ -7,14 +7,29 @@ import {
 	Button,
 	Heading,
 	FormControl,
-	WarningOutlineIcon,
 } from "native-base"
-import React from "react"
+import React, { useContext } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { SafeAreaView, StyleSheet } from "react-native"
+import { schema } from "../modules/auth/utils/validations"
+import { AuthContext } from "../modules/auth/context/AuthContext"
 
 type Props = { navigation: any }
 
 const SignInScreen = ({ navigation }: Props) => {
+	const auth = useContext(AuthContext)
+	const methods = useForm({
+		mode: "onChange",
+		resolver: yupResolver(schema.signin),
+	})
+	const { control, handleSubmit } = methods
+	const { errors, isValid } = methods?.formState
+
+	const onSubmit = (inputs: any) => {
+		auth?.setIsLoggedIn(true)
+	}
+
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<Stack mx={4}>
@@ -27,37 +42,53 @@ const SignInScreen = ({ navigation }: Props) => {
 				</Stack>
 
 				<Box my={10}>
-					<FormControl>
+					<FormControl isInvalid={!!errors?.phone}>
 						<FormControl.Label>Phone number</FormControl.Label>
-						<Input
-							type="text"
-							height={16}
-							rounded="2xl"
-							keyboardType="number-pad"
-							_input={{ fontSize: "lg" }}
-							placeholder="Enter your phone number"
+						<Controller
+							name="phone"
+							control={control}
+							render={({ field: { onChange } }) => (
+								<Input
+									type="text"
+									height={16}
+									rounded="2xl"
+									onChangeText={onChange}
+									keyboardType="number-pad"
+									_input={{ fontSize: "lg" }}
+									placeholder="Enter your phone number"
+								/>
+							)}
 						/>
-						<FormControl.ErrorMessage
-							leftIcon={<WarningOutlineIcon size="xs" />}
-						>
-							Atleast 9 characters are required.
-						</FormControl.ErrorMessage>
+
+						{errors && errors?.phone ? (
+							<FormControl.ErrorMessage>
+								{errors?.phone?.message}
+							</FormControl.ErrorMessage>
+						) : null}
 					</FormControl>
 
-					<FormControl>
+					<FormControl isInvalid={!!errors?.password}>
 						<FormControl.Label>Password</FormControl.Label>
-						<Input
-							height={16}
-							rounded="2xl"
-							type="password"
-							_input={{ fontSize: "lg" }}
-							placeholder="Enter your password"
+						<Controller
+							name="password"
+							control={control}
+							render={({ field: { onChange } }) => (
+								<Input
+									height={16}
+									rounded="2xl"
+									type="password"
+									onChangeText={onChange}
+									_input={{ fontSize: "lg" }}
+									placeholder="Enter your password"
+								/>
+							)}
 						/>
-						<FormControl.ErrorMessage
-							leftIcon={<WarningOutlineIcon size="xs" />}
-						>
-							Atleast 6 characters are required.
-						</FormControl.ErrorMessage>
+
+						{errors && errors?.password ? (
+							<FormControl.ErrorMessage>
+								{errors?.password?.message}
+							</FormControl.ErrorMessage>
+						) : null}
 
 						<Link
 							mt={2}
@@ -78,8 +109,9 @@ const SignInScreen = ({ navigation }: Props) => {
 					height={16}
 					rounded="2xl"
 					variant="solid"
+					isDisabled={!isValid}
+					onPress={handleSubmit(onSubmit)}
 					_text={{ fontSize: "2xl", fontWeight: "medium" }}
-					onPress={() => navigation.navigate("HomeScreen")}
 				>
 					Sign in
 				</Button>
